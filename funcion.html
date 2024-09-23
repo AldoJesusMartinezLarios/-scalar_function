@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verificador de Función Escalar</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        body {
+            background-color: #f0f8ff;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .container {
+            max-width: 1000px;
+            padding: 20px;
+        }
+        .card {
+            background-color: #ffffff;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .card-header {
+            background-color: #4CAF50;
+            color: white;
+            text-align: center;
+            padding: 20px;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .set-container {
+            height: 400px;
+            width: 200px;
+            border: 3px solid #4CAF50;
+            border-radius: 100px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 20px;
+            position: relative;
+            background-color: #e8f5e9;
+            overflow: hidden;
+            margin: 0 10px;
+        }
+        .set-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+        .set-items {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-content: flex-start;
+            width: 100%;
+            height: calc(100% - 60px);
+            overflow-y: auto;
+            padding: 5px;
+        }
+        .set-item {
+            background-color: #4CAF50;
+            color: white;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 5px;
+            font-weight: bold;
+            font-size: 12px;
+            position: relative;
+            cursor: pointer;
+        }
+        .set-item:hover .item-actions {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .item-actions {
+            position: absolute;
+            right: -5px;
+            top: -5px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            display: flex;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        .item-action {
+            padding: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            color: #4CAF50;
+        }
+        .item-action:hover {
+            background-color: #f0f0f0;
+        }
+        .btn-add {
+            position: absolute;
+            bottom: 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .btn-add:hover {
+            transform: scale(1.1);
+            background-color: #45a049;
+        }
+        .btn-analyze {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 18px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .btn-analyze:hover {
+            background-color: #45a049;
+        }
+        .btn-clear {
+            background-color: #f44336;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 18px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 0 10px;
+        }
+        .btn-clear:hover {
+            background-color: #d32f2f;
+        }
+        .result {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .result-status {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        .result-reason {
+            font-size: 16px;
+            font-weight: normal;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="card">
+        <div class="card-header">
+            VERIFICADOR DE FUNCIÓN ESCALAR
+        </div>
+        <div class="card-body">
+            <div class="row justify-content-center">
+                <!-- Conjunto A -->
+                <div class="col-md-4 d-flex justify-content-center">
+                    <div class="set-container">
+                        <div class="set-title">Conjunto A</div>
+                        <div id="setAItems" class="set-items"></div>
+                        <button class="btn-add" onclick="agregarElemento('A')">+</button>
+                    </div>
+                </div>
+                
+                <!-- Botón Limpiar -->
+                <div class="col-md-2 d-flex align-items-center justify-content-center">
+                    <button onclick="limpiarConjuntos()" class="btn-clear">Limpiar</button>
+                </div>
+                
+                <!-- Conjunto B -->
+                <div class="col-md-4 d-flex justify-content-center">
+                    <div class="set-container">
+                        <div class="set-title">Conjunto B</div>
+                        <div id="setBItems" class="set-items"></div>
+                        <button class="btn-add" onclick="agregarElemento('B')">+</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Botón Analizar -->
+            <div class="d-flex justify-content-center mt-4">
+                <button onclick="verificarFuncionEscalar()" class="btn-analyze">Analizar</button>
+            </div>
+
+            <!-- Resultado -->
+            <div class="result" id="resultado"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let setA = [];
+    let setB = [];
+
+    function agregarElemento(conjunto) {
+        Swal.fire({
+            title: `Agregar elemento al Conjunto ${conjunto}`,
+            input: 'text',
+            inputPlaceholder: 'Ingrese una fracción o número',
+            showCancelButton: true,
+            confirmButtonText: 'Agregar',
+            cancelButtonText: 'Cancelar',
+            inputValidator: (value) => {
+                if (!value) {
+                    return 'Debe ingresar un valor';
+                }
+                if (!validarFraccion(value)) {
+                    return 'Debe ingresar una fracción válida o un número';
+                }
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const valor = result.value;
+                
+                if (conjunto === 'A') {
+                    setA.push(valor);
+                } else {
+                    setB.push(valor);
+                }
+
+                actualizarVistaConjunto(conjunto);
+            }
+        });
+    }
+
+    function editarElemento(conjunto, index) {
+        const valorActual = conjunto === 'A' ? setA[index] : setB[index];
+        Swal.fire({
+            title: `Editar elemento del Conjunto ${conjunto}`,
+            input: 'text',
+            inputValue: valorActual,
+            showCancelButton: true,
+            confirmButtonText: 'Guardar',
+            cancelButtonText: 'Cancelar',
+            inputValidator: (value) => {
+                if (!value) {
+                    return 'Debe ingresar un valor';
+                }
+                if (!validarFraccion(value)) {
+                    return 'Debe ingresar una fracción válida o un número';
+                }
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                if (conjunto === 'A') {
+                    setA[index] = result.value;
+                } else {
+                    setB[index] = result.value;
+                }
+                actualizarVistaConjunto(conjunto);
+            }
+        });
+    }
+
+    function eliminarElemento(conjunto, index) {
+        Swal.fire({
+            title: '¿Estás seguro?',
+            text: "No podrás revertir esta acción",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Sí, eliminar',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                if (conjunto === 'A') {
+                    setA.splice(index, 1);
+                } else {
+                    setB.splice(index, 1);
+                }
+                actualizarVistaConjunto(conjunto);
+                Swal.fire(
+                    'Eliminado',
+                    'El elemento ha sido eliminado.',
+                    'success'
+                );
+            }
+        });
+    }
+
+    function actualizarVistaConjunto(conjunto) {
+        const itemsContainer = document.getElementById(`set${conjunto}Items`);
+        itemsContainer.innerHTML = '';
+        const set = conjunto === 'A' ? setA : setB;
+        
+        set.forEach((valor, index) => {
+            const elementoDiv = document.createElement('div');
+            elementoDiv.className = 'set-item';
+            elementoDiv.textContent = valor;
+            
+            const accionesDiv = document.createElement('div');
+            accionesDiv.className = 'item-actions';
+            accionesDiv.innerHTML = `
+                <span class="item-action" onclick="editarElemento('${conjunto}', ${index})" title="Editar"><i class="fas fa-edit"></i></span>
+                <span class="item-action" onclick="eliminarElemento('${conjunto}', ${index})" title="Eliminar"><i class="fas fa-trash"></i></span>
+            `;
+            
+            elementoDiv.appendChild(accionesDiv);
+            itemsContainer.appendChild(elementoDiv);
+        });
+    }
+
+    function validarFraccion(valor) {
+        return /^-?\d+(\.\d+)?$/.test(valor) || /^-?\d+\/\d+$/.test(valor);
+    }
+
+    function convertirFraccion(fraccion) {
+        if (fraccion.includes('/')) {
+            const [numerador, denominador] = fraccion.split('/');
+            return parseFloat(numerador) / parseFloat(denominador);
+        }
+        return parseFloat(fraccion);
+    }
+
+    function verificarFuncionEscalar() {
+        const resultadoDiv = document.getElementById('resultado');
+        
+        if (setA.length !== setB.length) {
+            resultadoDiv.innerHTML = `
+                <div class="result-status" style="color:red;">No es una función escalar</div>
+                <div class="result-reason">Los conjuntos A y B no tienen el mismo número de elementos.</div>
+            `;
+            return;
+        }
+
+        let esFuncionEscalar = true;
+
+        for (let i = 0; i < setB.length; i++) {
+            const valorA = convertirFraccion(setA[i]);
+            const valorB = convertirFraccion(setB[i]);
+            
+            if (Math.abs(valorA * valorB - 1) > 1e-10) {
+                esFuncionEscalar = false;
+                break;
+            }
+        }
+
+        if (esFuncionEscalar) {
+            resultadoDiv.innerHTML = `
+                <div class="result-status" style="color:green;">Es una función escalar</div>
+                <div class="result-reason">Todos los elementos de B son los recíprocos de los de A.</div>
+            `;
+        } else {
+            resultadoDiv.innerHTML = `
+                <div class="result-status" style="color:red;">No es una función escalar</div>
+                <div class="result-reason">Los elementos de B no son los recíprocos de los de A.</div>
+            `;
+        }
+    }
+
+    function limpiarConjuntos() {
+        Swal.fire({
+            title: '¿Estás seguro?',
+            text: "Esta acción borrará todos los elementos de ambos conjuntos",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Sí, limpiar',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                setA = [];
+                setB = [];
+                actualizarVistaConjunto('A');
+                actualizarVistaConjunto('B');
+                document.getElementById('resultado').innerHTML = '';
+                Swal.fire(
+                    'Limpiado',
+                    'Todos los elementos han sido eliminados.',
+                    'success'
+                );
+            }
+        });
+    }
+</script>
+
+</body>
+</html>
